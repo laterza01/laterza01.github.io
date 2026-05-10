@@ -428,12 +428,36 @@
   <script>
     function handleSubmit(e) {
       e.preventDefault();
-      const btn = e.target.querySelector('button');
-      const input = e.target.querySelector('input');
-      btn.textContent = 'You\'re on the list!';
-      btn.style.background = '#2d6a4f';
-      input.disabled = true;
+      const form = e.target;
+      const btn  = form.querySelector('button');
+      const input = form.querySelector('input[type="email"]');
+      const email = input.value;
+
+      btn.textContent = 'Subscribing...';
       btn.disabled = true;
+      input.disabled = true;
+
+      const url = 'https://gmail.us14.list-manage.com/subscribe/post-json'
+        + '?u=7ae5e88fe013f20007baa52f2&id=850686144d'
+        + '&EMAIL=' + encodeURIComponent(email)
+        + '&c=mcCallback';
+
+      window.mcCallback = function(data) {
+        if (data.result === 'success') {
+          btn.textContent = "You're on the list!";
+          btn.style.background = '#2d6a4f';
+        } else {
+          btn.textContent = 'Try again';
+          btn.style.background = '#c0392b';
+          btn.disabled = false;
+          input.disabled = false;
+          console.error(data.msg);
+        }
+      };
+
+      const script = document.createElement('script');
+      script.src = url;
+      document.body.appendChild(script);
     }
   </script>
 
